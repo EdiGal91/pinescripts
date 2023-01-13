@@ -2,23 +2,27 @@
 // © EdiGal
 
 //@version=5
-strategy("Candle Absorption", overlay=true)
+strategy("Candle Absorption #1", overlay=true, initial_capital = 1000)
 
-isCurrentGreen = close > open
+isCurrentGreen = close >= open
 isCurrentRed = not isCurrentGreen
 
-isPreviousRed = close[1] < open[1]
+isPreviousGreen = close[1] >= open[1]
+isPreviousRed = not isPreviousGreen
+
+isPivotUp = isCurrentGreen and isPreviousRed
+isPivotDown = isCurrentRed and isPreviousGreen
+
 curPoints = math.abs(close-open)
 prevPoints = math.abs(close[1]-open[1])
 
-isPivotUp = isCurrentGreen and isPreviousRed
-isPivotDown = isPreviousRed and isPreviousRed
-
 isAbsorption = curPoints > prevPoints
 
-isBearishAbsorption = isPivotUp and isAbsorption
-isbullishAbsorption = isPivotDown and isAbsorption
+isBearishAbsorption = isAbsorption and isPivotUp
+isbullishAbsorption = isAbsorption and isPivotDown
 
 if (isBearishAbsorption)
     strategy.entry("Enter Long", strategy.long)
+    strategy.exit("Exit Long", from_entry="Enter Long", stop=open)
+if(isbullishAbsorption)
     strategy.exit("Exit Long", from_entry="Enter Long", stop=open)
