@@ -1,0 +1,24 @@
+// This source code is subject to the terms of the Mozilla Public License 2.0 at https://mozilla.org/MPL/2.0/
+// © EdiGal
+
+//@version=5
+strategy("Candle Absorption", overlay=true)
+
+isCurrentGreen = close > open
+isCurrentRed = not isCurrentGreen
+
+isPreviousRed = close[1] < open[1]
+curPoints = math.abs(close-open)
+prevPoints = math.abs(close[1]-open[1])
+
+isPivotUp = isCurrentGreen and isPreviousRed
+isPivotDown = isPreviousRed and isPreviousRed
+
+isAbsorption = curPoints > prevPoints
+
+isBearishAbsorption = isPivotUp and isAbsorption
+isbullishAbsorption = isPivotDown and isAbsorption
+
+if (isBearishAbsorption)
+    strategy.entry("Enter Long", strategy.long)
+    strategy.exit("Exit Long", from_entry="Enter Long", stop=open)
