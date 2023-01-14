@@ -4,6 +4,8 @@
 //@version=5
 strategy("Candle Absorption #1", overlay=true, initial_capital = 1000)
 
+isInTrade = strategy.position_size != 0
+
 isCurrentGreen = close >= open
 isCurrentRed = not isCurrentGreen
 
@@ -18,11 +20,11 @@ prevPoints = math.abs(close[1]-open[1])
 
 isAbsorption = curPoints > prevPoints
 
-isBearishAbsorption = isAbsorption and isPivotUp
-isbullishAbsorption = isAbsorption and isPivotDown
+isbullishAbsorption = isAbsorption and isPivotUp
+isBearishAbsorption = isAbsorption and isPivotDown
 
-if (isBearishAbsorption)
+if (isbullishAbsorption and not isInTrade)
     strategy.entry("Enter Long", strategy.long)
-    strategy.exit("Exit Long", from_entry="Enter Long", stop=open)
-if(isbullishAbsorption)
-    strategy.exit("Exit Long", from_entry="Enter Long", stop=open)
+    strategy.exit("SL", from_entry="Enter Long", stop=open)
+if(isBearishAbsorption and isInTrade)
+    strategy.close("Enter Long")
